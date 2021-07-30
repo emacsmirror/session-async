@@ -265,7 +265,9 @@ here (user-facing Emacs porcess)."
 (defalias 'session-async-shutdown 'jsonrpc-shutdown)
 
 (defmacro session-async--with-advice (fn-orig where fn-advice &rest body)
-  "Execute BODY with advice added WHERE using FN-ADVICE temporarily added to FN-ORIG.Taken from `undo-fu--with-advice'"
+  "Execute BODY with advice added WHERE using FN-ADVICE temporarily on FN-ORIG.
+
+Taken from `undo-fu--with-advice'"
   `
   (let ((fn-advice-var ,fn-advice))
     (unwind-protect
