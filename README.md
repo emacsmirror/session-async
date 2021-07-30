@@ -16,6 +16,23 @@ I'd also add that this package is meant for package developers, rather than end 
 
 # Install
 
+I recommend installing [using `straight.el`](https://ubolonton.github.io/emacs-tree-sitter/installation/#installing-with-straight-dot-el)
+
+## Using straight.el
+
+Make sure you have `straight.el` up and running. Then add the following to your init.el file:
+
+```elisp
+(straight-use-package
+ '(session-async :type git
+                 :repo "https://codeberg.org/FelipeLema/session-async.el.git"
+                 :branch "main"
+                 :files ("session-async.el")))
+```
+
+That's basically it.
+
+## Manual
 Download this code to somewhere wher Emacs can see it. Then load this `session-async.el` file
 
 ```elisp
