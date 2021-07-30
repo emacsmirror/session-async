@@ -172,6 +172,7 @@ sessiona instance)"))
 (cl-defmethod jsonrpc-shutdown ((conn session-async-connection)
                                 &optional _cleanup)
   "Make sure tcp server and Emacs session are killed."
+  (cl-call-next-method)
   (dolist (p (list
               (session-async-connection--emacs-process conn)
               (session-async-connection--listener-process conn)))
