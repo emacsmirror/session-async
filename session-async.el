@@ -215,7 +215,9 @@ here (user-facing Emacs porcess)."
                        :emacs-process emacs-session-process
                        :listener-process session-listener-process
                        :process client))
-                (process-get listening-server 'handlers)))
+                (process-get listening-server 'handlers))
+               ;; set :no-query
+               (set-process-query-on-exit-flag client nil))
              session)))
     (setq
      emacs-session-process
