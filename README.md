@@ -36,7 +36,8 @@ That's basically it.
 Download this code to somewhere wher Emacs can see it. Then load this `session-async.el` file
 
 ```elisp
-(load-file "~/some/path/session-async.el/session-async.el")
+(add-to-list 'load-path "~/some/path/session-async.el") ;; add repo directory, not the file
+(require 'session-async)
 ```
 
 # Async usage

@@ -8,7 +8,6 @@ test:
 	LC_ALL=C ./semacs \
 	    --no-package --no-refresh-packages --no-org-repo -- \
 	    -l tests/setup.el \
-	    -l session-async.el \
 	    -l tests/session-async-tests.el \
 	    -f buttercup-run
 

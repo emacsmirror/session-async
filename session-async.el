@@ -232,10 +232,7 @@ here (user-facing Emacs porcess)."
              (list
               emacs-command
               "-l"
-              (or
-               load-file-name ;; `load' or `load-file-name'
-               (locate-library "session-async") ;; installed as package
-               (symbol-file 'session-async-new)) ;; last resource
+	      (locate-library "session-async") ;; installed as package
               "-batch"
               "-f" "session-async-eval-loop"
               (format "%d"

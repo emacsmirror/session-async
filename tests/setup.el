@@ -12,3 +12,9 @@
 
 (straight-use-package 'buttercup)
 (require 'tramp)
+
+;; load the
+(let ((repo-root
+       (locate-dominating-file default-directory "Makefile")))
+  (add-to-list 'load-path repo-root))
+(require 'session-async)
