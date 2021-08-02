@@ -154,7 +154,8 @@ Do not run this in user-facing session.  It will hang Emacs until exit."
   ((-emacs-process
     :initarg :emacs-process
     :accessor session-async-connection--emacs-process
-    :documentation "WIP: not the I/O, but the running Emacs instance")
+    :documentation "Process for the running Emacs instance (we do not
+communicate directly to this process).")
    (-listener-process
     :initarg :listener-process
     :accessor session-async-connection--listener-process
@@ -231,9 +232,7 @@ here (user-facing Emacs porcess)."
              (list
               emacs-command
               "-l"
-              (or (locate-library "session-async")
-                  ;;(error "WIP: handle this")
-                  "/home/felipel/session-async.el/session-async.el")
+              (locate-library "session-async")
               "-batch"
               "-f" "session-async-eval-loop"
               (format "%d"
