@@ -166,7 +166,7 @@ sessiona instance)"))
 
 (defun session-async--create-unique-session-name ()
   "Create a unique name for a (disposable) Emacs session."
-  (format "Emacs session @ %s..%d"
+  (format "* Emacs session @ %s..%d"
           (format-time-string "%s")
           (random)))
 
