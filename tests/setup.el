@@ -10,6 +10,7 @@
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
+(straight-use-package 's)
 (straight-use-package 'buttercup)
 (require 'tramp)
 

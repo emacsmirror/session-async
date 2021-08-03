@@ -26,6 +26,7 @@
 ;;; Code:
 
 (require 'buttercup)
+(require 's)
 
 (describe "API"
   (it "future"
@@ -43,7 +44,7 @@
             :not :to-equal
             (emacs-pid)))
 
-  (it "running session"
+  (it "cleanup session"
     (let* ((session (session-async-new))
            (session-pid
             (iter-next
@@ -66,7 +67,27 @@
               :to-equal
               session-pid)
 
-      (session-async-shutdown session))))
+      (session-async-shutdown session)))
+  (it "buffers"
+    (let* ((session-name "some-async-session-name-that-no-one-should-use")
+           (session (session-async-new
+                     session-name)))
+      (cl-flet ((find-session-buffers ()
+                                      (cl-loop for b being the buffers
+                                               if (s-contains? session-name (buffer-name b))
+                                               collect b
+                                               end)))
+        ;; some buffers created can be found
+        (expect
+         (find-session-buffers)
+         :not :to-be nil)
+
+        (session-async-shutdown session t)
+
+        ;; those buffers were killed
+        (expect
+         (find-session-buffers)
+         :not :to-be nil)))))
 
 (describe "internals"
   (it "example"

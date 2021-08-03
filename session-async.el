@@ -171,14 +171,17 @@ sessiona instance)"))
           (random)))
 
 (cl-defmethod jsonrpc-shutdown ((conn session-async-connection)
-                                &optional _cleanup)
+                                &optional cleanup)
   "Make sure tcp server and Emacs session are killed."
   (cl-call-next-method)
   (dolist (p (list
               (session-async-connection--emacs-process conn)
               (session-async-connection--listener-process conn)))
     (when (process-live-p p)
-      (delete-process p))))
+      (delete-process p))
+    (when (and cleanup
+               (process-buffer p))
+      (kill-buffer (process-buffer p)))))
 
 ;;;###autoload
 (cl-defun session-async-new (&optional
@@ -196,30 +199,38 @@ here (user-facing Emacs porcess)."
          emacs-session-process
          session)
     (setq session-listener-process
-          (make-network-process
-           :name (format "%s (listener)"
-                         session-name)
-           :server t :host "localhost"
-           :noquery t
-           :service 0
-           :log
-           (lambda (listening-server client _message)
-             (if session
-                 ;; session has already been set
-                 ;; this is a second unexpected connection
-                 ;; so we ditch it
-                 (delete-process client)
-               (push
-                (setq session
-                      (session-async-connection
-                       :name (format "%s connection" session-name)
-                       :emacs-process emacs-session-process
-                       :listener-process session-listener-process
-                       :process client))
-                (process-get listening-server 'handlers))
-               ;; set :no-query
-               (set-process-query-on-exit-flag client nil))
-             session)))
+          (let ((listener-name
+                 (format "%s (listener)"
+                         session-name)))
+            (make-network-process
+             :name listener-name
+             :buffer (generate-new-buffer listener-name)
+             :server t :host "localhost"
+             :noquery t
+             :service 0
+             :log
+             (lambda (listening-server client _message)
+               (if session
+                   ;; session has already been set
+                   ;; this is a second unexpected connection
+                   ;; so we ditch it
+                   (delete-process client)
+                 (push
+                  (setq session
+                        (session-async-connection
+                         :name (format "%s connection" session-name)
+                         :emacs-process emacs-session-process
+                         :listener-process session-listener-process
+                         :process client))
+                  (process-get listening-server 'handlers))
+                 ;; will associate to current buffer, even when set @ nil
+                 (set-process-buffer client
+                                     (generate-new-buffer
+                                      (format "%s (client)"
+                                              session-name)))
+                 ;; set :no-query
+                 (set-process-query-on-exit-flag client nil))
+               session))))
     (setq
      emacs-session-process
      (let* ((default-directory user-emacs-directory)
@@ -325,7 +336,7 @@ Returns nil."
                                 "1 seconds"
                                 nil
                                 (lambda ()
-                                  (session-async-shutdown this-session))))
+                                  (session-async-shutdown this-session t))))
                              ;; de-serialize
                              (session-async--deserialize-evaluation
                               result-string
@@ -365,7 +376,7 @@ If RUNNING-SESSION is not provided, will create a new one-shot session."
                "1 seconds"
                nil
                (lambda ()
-                 (session-async-shutdown this-session))))
+                 (session-async-shutdown this-session t))))
             (if received-status-and-result
                 (iter-yield
                  (cdr received-status-and-result))
