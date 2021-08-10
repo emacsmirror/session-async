@@ -1,4 +1,4 @@
-;;; session-async.el --- Asynchronous processing in a separate Emacs session  -*- lexical-binding: t; -*-
+;;; session-async.el --- Asynchronous processing in a forked process session  -*- lexical-binding: t; -*-
 
 ;; Copyright © 2021  Felipe Lema
 
