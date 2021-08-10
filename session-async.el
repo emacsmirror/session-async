@@ -172,7 +172,9 @@ sessiona instance)"))
 
 (cl-defmethod jsonrpc-shutdown ((conn session-async-connection)
                                 &optional cleanup)
-  "Make sure tcp server and Emacs session are killed."
+  "Make sure tcp server and Emacs session are killed.
+Argument CONN a object/variable `session-async-connection'
+Optional argument CLEANUP whether processes should be cleaned."
   (cl-call-next-method)
   (dolist (p (list
               (session-async-connection--emacs-process conn)
@@ -299,7 +301,9 @@ PROC and CHANGE are forwarded to `jsonrpc--process-sentinel'."
    (jsonrpc--process-sentinel proc change)))
 
 (cl-defmethod initialize-instance ((conn session-async-connection) _slots)
-  "Prevent jsonrpc from printing debug message on process ending."
+  "Prevent jsonrpc from printing debug message on process ending.
+
+Argument CONN a object/variable `session-async-connection'."
   (cl-call-next-method)
   (let* ((proc (jsonrpc--process conn)))
     (set-process-sentinel proc #'session-async--jsonrpc-process-sentinel))
