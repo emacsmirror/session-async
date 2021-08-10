@@ -8,7 +8,7 @@
 ;; Package-Requires: ((emacs "27.1") (jsonrpc "1.0.9"))
 ;; URL: https://codeberg.org/FelipeLema/session-async.el
 
-;; Keywords: async
+;; Keywords: async, comm, data, files, internal, maint, processes, tools
 ;; X-URL: https://codeberg.org/FelipeLema/session-async.el
 
 ;; This program is free software; you can redistribute it and/or modify
