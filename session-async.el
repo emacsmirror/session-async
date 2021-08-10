@@ -260,7 +260,7 @@ here (user-facing Emacs porcess)."
         :stderr (generate-new-buffer
                  (format "*%s stderr*" instance-process-name)))))
     (cl-flet ((session-ready? ()
-                              (and (not (null session))
+                              (and session
                                    (process-live-p session-listener-process)
                                    (process-live-p emacs-session-process))))
       ;; wait until session is ready
