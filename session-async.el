@@ -74,7 +74,7 @@ Returns:
 (defun session-async--error (&rest args)
   "Forwards ARGS to `error' prepending \"session-async\" to format."
   (let ((e-format (car args)))
-    (apply 'error
+    (apply #'error
            (list
             (concat
              "session-async: "
@@ -129,7 +129,7 @@ Do not run this in user-facing session.  It will hang Emacs until exit."
                      port)
            :request-dispatcher
            (lambda (_main-emacs-connection method params)
-             (apply 'session-async-handle-request
+             (apply #'session-async-handle-request
                     method
                     (append params nil)))
            :on-shutdown (lambda (_conn)
@@ -275,7 +275,7 @@ here (user-facing Emacs porcess)."
           session
         (session-async--error "Not connected, timed out")))))
 
-(defalias 'session-async-shutdown 'jsonrpc-shutdown)
+(defalias 'session-async-shutdown #'jsonrpc-shutdown)
 
 (defmacro session-async--with-advice (fn-orig where fn-advice &rest body)
   "Execute BODY with advice added WHERE using FN-ADVICE temporarily on FN-ORIG.
