@@ -67,7 +67,7 @@
               :to-equal
               session-pid)
 
-      (session-async-shutdown session)))
+      (session-async-shutdown session t)))
   (it "buffers"
     (let* ((session-name "some-async-session-name-that-no-one-should-use")
            (session (session-async-new
