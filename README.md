@@ -1,3 +1,5 @@
+[![MELPA](https://melpa.org/packages/session-async-badge.svg)](https://melpa.org/#/session-async)
+
 # session-async.el
 
 Package for doing asynchronous processing in Emacs, just like [`async.el`](https://github.com/jwiegley/emacs-async)
@@ -16,21 +18,23 @@ I'd also add that this package is meant for package developers, rather than end 
 
 # Install
 
-I recommend installing [using `straight.el`](https://ubolonton.github.io/emacs-tree-sitter/installation/#installing-with-straight-dot-el)
+I recommend installing [using `straight.el`](https://ubolonton.github.io/emacs-tree-sitter/installation/#installing-with-straight-dot-el).
+
+Do remember that this package is targeted to package developers and not end users.
 
 ## Using straight.el
 
 Make sure you have `straight.el` up and running. Then add the following to your init.el file:
 
 ```elisp
-(straight-use-package
- '(session-async :type git
-                 :repo "https://codeberg.org/FelipeLema/session-async.el.git"
-                 :branch "main"
-                 :files ("session-async.el")))
+(straight-use-package 'session-async)
 ```
 
 That's basically it.
+
+## Using MELPA
+
+Follow the [instructions to install MELPA](https://melpa.org/#/getting-started). The run `M-x package-install` → `session-async`.
 
 ## Manual
 Download this code to somewhere wher Emacs can see it. Then load this `session-async.el` file
