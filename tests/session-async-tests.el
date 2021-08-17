@@ -102,7 +102,41 @@
                   (< i 10))
         (sit-for 0.1)
         (setq i (+ i 1)))
-      (expect r :to-equal 222))))
+      (expect r :to-equal 222)))
+  (it "escaping characters"
+    (let ((twotwotwo-with-null-at-end
+           (vconcat "twotwotwo" '(0)))
+          r
+          (i 0))
+      (session-async-start
+       `(lambda ()
+          ;; this string below should be correctly encoded and should *not* error out
+          ,twotwotwo-with-null-at-end)
+       (lambda (twotwotwo)
+         (setq r twotwotwo)))
+      (while (and (null r)
+                  (< i 10))
+        (sit-for 0.1)
+        (setq i (+ i 1)))
+      (expect r :to-equal twotwotwo-with-null-at-end)))
+
+  (it "text with properties"
+    (let (r
+          (i 0))
+      (session-async-start
+       `(lambda ()
+          ;; this string below should be correctly encoded and should *not* error out
+          ,(let ((ttt "twotwotwo"))
+             (add-text-properties 0 1 '(:some-prop 1)
+                                  ttt)
+             ttt))
+       (lambda (twotwotwo)
+         (setq r twotwotwo)))
+      (while (and (null r)
+                  (< i 10))
+        (sit-for 0.1)
+        (setq i (+ i 1)))
+      (expect r :to-equal "twotwotwo"))))
 
 (provide 'session-async-tests)
 ;;; session-async-tests.el ends here
