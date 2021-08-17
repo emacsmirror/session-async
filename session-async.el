@@ -4,7 +4,7 @@
 
 ;; Author: Felipe Lema <felipelema@mortemale.org>
 ;; Created: 2021-07-14
-;; Version: 0.0.1
+;; Version: 0.0.2
 ;; Package-Requires: ((emacs "27.1") (jsonrpc "1.0.9"))
 ;; URL: https://codeberg.org/FelipeLema/session-async.el
 
@@ -48,6 +48,16 @@
   "This var controls whether the loop should continue.")
 
 ;;;;; functions
+(defun session-async--sexp-to-string (sexp)
+  "Ensure that SEXP is correctly written and that is JSON-friendly."
+  (let (print-level
+        print-length
+        print-quoted
+        (print-escape-control-characters t)
+        (print-escape-nonascii t)
+        (print-circle t))
+    (prin1-to-string sexp)))
+
 (defun session-async--evaluate (sexp-as-string)
   "`read-from-string' SEXP-AS-STRING and return result.
 
@@ -100,14 +110,16 @@ Accepted METHOD: 'eval
 All other methods will be ignored.
 
 Returned sexp from calling `session-async--evaluate' with PARAMS will be
-immediately `prin1-to-string'-ed before returning from this function.
+immediately `session-async--sexp-to-string'-ed before returning from this
+function.
 
 This way it can be safely sent back through communication socket."
   (pcase method
     (`eval
      (let ((eval-result
-            (session-async--evaluate (car params))))
-       (prin1-to-string eval-result)))))
+            (session-async--evaluate
+             (car params))))
+       (session-async--sexp-to-string eval-result)))))
 
 
 (defun session-async-eval-loop ()
@@ -325,12 +337,8 @@ Returns nil."
          (this-session (or running-session
                            (session-async-new)))
          (remote-sexp-as-string
-          (let (print-level
-                print-length
-                (print-escape-nonascii t)
-                (print-circle t))
-            (prin1-to-string
-             remote-sexp))))
+          (session-async--sexp-to-string
+           remote-sexp)))
     (jsonrpc-async-request this-session
                            :eval (vector remote-sexp-as-string)
                            :success-fn
