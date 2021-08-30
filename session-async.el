@@ -47,6 +47,9 @@
 (defvar session-async--keep-loop-running nil
   "This var controls whether the loop should continue.")
 
+(defvar session-async--request-timeout 20
+  "Time in seconds before timing out an async request.")
+
 ;;;;; functions
 (defun session-async--sexp-to-string (sexp)
   "Ensure that SEXP is correctly written and that is JSON-friendly."
@@ -341,6 +344,7 @@ Returns nil."
            remote-sexp)))
     (jsonrpc-async-request this-session
                            :eval (vector remote-sexp-as-string)
+                           :timeout session-async--request-timeout
                            :success-fn
                            (lambda (result-string)
                              (when kill-session-after-done
