@@ -47,7 +47,7 @@
 (defvar session-async--keep-loop-running nil
   "This var controls whether the loop should continue.")
 
-(defvar session-async--request-timeout 20
+(defvar session-async--request-timeout 60
   "Time in seconds before timing out an async request.")
 
 ;;;;; functions
