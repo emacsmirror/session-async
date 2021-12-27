@@ -28,6 +28,9 @@
 (require 'buttercup)
 (require 's)
 
+(defvar session-async-tests--single-running-session
+  nil)
+
 (describe "API"
   (it "future"
     (expect (iter-next
@@ -87,7 +90,35 @@
         ;; those buffers were killed
         (expect
          (find-session-buffers)
-         :not :to-be nil)))))
+         :not :to-be nil))))
+  (describe "get-session-create"
+    (after-each
+      (session-async-shutdown
+       (session-async-get-session-create
+         'session-async-tests--single-running-session)))
+    (it "request twice, get same session"
+
+      (expect
+       (session-async-get-session-create
+        'session-async-tests--single-running-session)
+       :to-be
+       (session-async-get-session-create
+        'session-async-tests--single-running-session))
+
+      (cl-flet ((run-and-get (fn)
+                  (iter-next
+                   (session-async-future
+                    fn
+                    (session-async-get-session-create
+                     'session-async-tests--single-running-session)))))
+        (let* ((first-result
+                (run-and-get `(lambda ()
+                                (setq a 1))))
+               (second-result
+                (run-and-get
+                 `(lambda ()
+                    a))))
+          (expect first-result :to-equal second-result))))))
 
 (describe "internals"
   (it "example"

@@ -4,7 +4,7 @@
 
 ;; Author: Felipe Lema <felipelema@mortemale.org>
 ;; Created: 2021-07-14
-;; Version: 0.0.2
+;; Version: 0.0.3
 ;; Package-Requires: ((emacs "27.1") (jsonrpc "1.0.9"))
 ;; URL: https://codeberg.org/FelipeLema/session-async.el
 
@@ -406,6 +406,24 @@ If RUNNING-SESSION is not provided, will create a new one-shot session."
      this-session)
     ;; create iterator and return it
     (funcall iter-l)))
+
+;;;###autoload
+(cl-defun session-async-get-session-create (sym
+                              &key
+                              (session-name (session-async--create-unique-session-name)))
+  "Get a running session and create it if it's necessary.
+
+SYM is the symbol the session is being used to handle the session.
+SYM should be quoted (see `set' and `symbol-value').
+
+SESSION-NAME is ignored if session is already running."
+  (let* ((maybe-session (symbol-value sym)))
+    (unless (and maybe-session
+                 (jsonrpc-running-p maybe-session))
+      (set sym
+           (session-async-new
+            session-name))))
+  (symbol-value sym))
 
 (provide 'session-async)
 ;;; session-async.el ends here
