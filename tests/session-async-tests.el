@@ -171,13 +171,22 @@
 
 (describe "with-tramp-loaded"
   (it "simple remote call that will bound tramp variables"
-              (require 'tramp) ;; this will bound special variables
-        (expect (iter-next
+    (require 'tramp) ;; this will bound special variables
+    (expect (iter-next
              (session-async-future
               `(lambda ()
                  222)))
             :to-equal
-            222)))
+            222))
+  (it "tramp variables are automagically forwarded"
+    (require 'tramp)
+    (let ((tramp-use-ssh-controlmaster-options nil))
+      (expect (iter-next
+               (session-async-future
+                `(lambda ()
+                   tramp-use-ssh-controlmaster-options)))
+              :to-equal
+               nil))))
 
 (provide 'session-async-tests)
 ;;; session-async-tests.el ends here

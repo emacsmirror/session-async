@@ -374,8 +374,9 @@ Returns nil."
          (remote-sexp-as-string
           (session-async--sexp-to-string
            (if session-async-wrap-remote-with-ease-bindings
-               `(let (,@(session-async-bindings-to-mirror-setup))
-                  ,remote-sexp)
+               `(lambda ()
+                  (let (,@(session-async-bindings-to-mirror-setup))
+                    (funcall ,remote-sexp)))
              remote-sexp))))
     (jsonrpc-async-request this-session
                            :eval (vector remote-sexp-as-string)
