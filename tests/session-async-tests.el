@@ -169,5 +169,15 @@
         (setq i (+ i 1)))
       (expect r :to-equal "twotwotwo"))))
 
+(describe "with-tramp-loaded"
+  (it "simple remote call that will bound tramp variables"
+              (require 'tramp) ;; this will bound special variables
+        (expect (iter-next
+             (session-async-future
+              `(lambda ()
+                 222)))
+            :to-equal
+            222)))
+
 (provide 'session-async-tests)
 ;;; session-async-tests.el ends here

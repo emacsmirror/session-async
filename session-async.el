@@ -42,6 +42,15 @@
   "Asynchronous processing in separate Emacs session."
   :group 'emacs)
 
+(defcustom session-async-wrap-remote-with-ease-bindings
+  t
+  "Whether every REMOTE-SEXP in `session-async-start' should be wrapped
+with bindings that eases the remote setup (less code to write).
+
+See `session-async-bindings-to-mirror-setup'."
+  :type 'bool
+  :group 'session-async)
+
 ;;;; remote process
 ;;;;; variables
 (defvar session-async--keep-loop-running nil
@@ -292,6 +301,29 @@ here (user-facing Emacs porcess)."
           session
         (session-async--error "Not connected, timed out")))))
 
+;; re-define these tramp variables to shutdown compiler warnings
+(defvar tramp-remote-process-environment)
+(defvar tramp-remote-path)
+(defvar connection-local-profile-alist)
+(defvar connection-local-criteria-alist)
+(defun session-async-bindings-to-mirror-setup ()
+  "Bindings that will ease the of remote calls.
+
+Mostly variables important to Tramp.  And `load-path' and `default-directory'.
+
+The REMOTE-SEXP argument of `session-async-start' will be wrapped with these
+bindings."
+  `((tramp-remote-process-environment
+     (quote ,tramp-remote-process-environment))
+    (tramp-remote-path (quote ,tramp-remote-path))
+    (tramp-use-ssh-controlmaster-options ,(when (boundp 'tramp-use-ssh-controlmaster-options)
+                                            tramp-use-ssh-controlmaster-options))
+    (enable-connection-local-variables ,enable-connection-local-variables)
+    (connection-local-profile-alist (quote ,connection-local-profile-alist))
+    (connection-local-criteria-alist (quote ,connection-local-criteria-alist))
+    (default-directory ,default-directory)
+    (load-path (quote ,load-path))))
+
 (defalias 'session-async-shutdown #'jsonrpc-shutdown)
 
 (defmacro session-async--with-advice (fn-orig where fn-advice &rest body)
@@ -341,7 +373,10 @@ Returns nil."
                            (session-async-new)))
          (remote-sexp-as-string
           (session-async--sexp-to-string
-           remote-sexp)))
+           (if session-async-wrap-remote-with-ease-bindings
+               `(let (,@(session-async-bindings-to-mirror-setup))
+                  ,remote-sexp)
+             remote-sexp))))
     (jsonrpc-async-request this-session
                            :eval (vector remote-sexp-as-string)
                            :timeout session-async--request-timeout
