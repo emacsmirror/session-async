@@ -314,8 +314,10 @@ Mostly variables important to Tramp.  And `load-path' and `default-directory'.
 The REMOTE-SEXP argument of `session-async-start' will be wrapped with these
 bindings."
   `((tramp-remote-process-environment
-     (quote ,tramp-remote-process-environment))
-    (tramp-remote-path (quote ,tramp-remote-path))
+     (quote ,(when (boundp 'tramp-remote-process-environment)
+               tramp-remote-process-environment)))
+    (tramp-remote-path (quote ,(when (boundp 'tramp-remote-path)
+                                 tramp-remote-path)))
     (tramp-use-ssh-controlmaster-options ,(when (boundp 'tramp-use-ssh-controlmaster-options)
                                             tramp-use-ssh-controlmaster-options))
     (enable-connection-local-variables ,enable-connection-local-variables)
